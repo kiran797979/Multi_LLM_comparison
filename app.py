@@ -1,5 +1,6 @@
 import os
 import random
+import time
 import streamlit as st
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -14,6 +15,7 @@ load_dotenv()
 client = OpenAI(
     api_key=os.getenv("OPENROUTER_API_KEY"),
     base_url="https://openrouter.ai/api/v1",
+    timeout=60.0,  # 60-second timeout per request
 )
 
 # ── Available models ────────────────────────────────────────────
@@ -71,7 +73,7 @@ st.write("Generate tailored content using dynamic prompts and multiple AI models
 
 st.subheader("1️⃣  Configure Your Content")
 
-# ── Model selection & multi-model toggle ────────────────────────
+# ── Model selection ─────────────────────────────────────────────
 compare_mode = st.checkbox(
     "Compare Across Multiple Models",
     help="Enable to generate content from several models side-by-side.",
@@ -193,20 +195,91 @@ temperature = st.slider(
 )
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# Helper — call one model and return (formatted_text, warnings)
+# Helper — call one model with retry / fallback logic
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+# Fallback map: if a model fails with a non-retryable error, try this instead
+FALLBACK_MODELS = {
+    "openai/gpt-oss-120b:free": "openai/gpt-oss-20b:free",
+}
+
+# HTTP codes that should NOT be retried (invalid/missing model)
+NO_RETRY_CODES = {400, 404}
+
+# HTTP codes that SHOULD be retried (rate-limit)
+RETRY_CODES = {429}
+
+MAX_RETRIES = 2        # how many extra attempts on 429
+RETRY_DELAY = 3        # seconds between retries
+
+
+def _extract_status_code(error):
+    """Try to pull an HTTP status code from an OpenAI/httpx exception."""
+    # openai.APIStatusError stores .status_code
+    code = getattr(error, "status_code", None)
+    if code is not None:
+        return int(code)
+    # Some wrapper errors embed it in the string (e.g. "Error code: 429 …")
+    msg = str(error)
+    if "Error code:" in msg:
+        try:
+            return int(msg.split("Error code:")[1].strip().split()[0])
+        except (IndexError, ValueError):
+            pass
+    return None
+
+
 def generate_for_model(model_name, prompt_text, temp):
-    """Call a single model via OpenRouter and return formatted output + warnings."""
-    response = client.chat.completions.create(
-        model=model_name,
-        messages=[{"role": "user", "content": prompt_text}],
-        temperature=temp,
-    )
-    raw = response.choices[0].message.content
-    formatted = format_output(content_type, raw)
-    warnings = validate_output(content_type, raw)
-    return formatted, warnings
+    """
+    Call a single model via OpenRouter.
+
+    - Retries up to MAX_RETRIES times on 429 (rate-limit).
+    - Falls back to an alternate model if one is configured.
+    - Returns (formatted, warnings, elapsed, actual_model_used).
+    - Raises on unrecoverable errors.
+    """
+    models_to_try = [model_name]
+    fallback = FALLBACK_MODELS.get(model_name)
+    if fallback:
+        models_to_try.append(fallback)
+
+    last_error = None
+
+    for current_model in models_to_try:
+        attempts = 0
+        while attempts <= MAX_RETRIES:
+            try:
+                start = time.time()
+                response = client.chat.completions.create(
+                    model=current_model,
+                    messages=[{"role": "user", "content": prompt_text}],
+                    temperature=temp,
+                )
+                elapsed = round(time.time() - start, 2)
+                raw = response.choices[0].message.content
+                formatted = format_output(content_type, raw)
+                warnings = validate_output(content_type, raw)
+                return formatted, warnings, elapsed, current_model
+
+            except Exception as e:
+                last_error = e
+                code = _extract_status_code(e)
+
+                # No-retry errors → skip straight to fallback model
+                if code in NO_RETRY_CODES:
+                    break
+
+                # Rate-limit → retry after short delay
+                if code in RETRY_CODES and attempts < MAX_RETRIES:
+                    attempts += 1
+                    time.sleep(RETRY_DELAY)
+                    continue
+
+                # Any other error → stop retrying this model
+                break
+
+    # If we exhausted all models / retries, raise the last error
+    raise last_error  # type: ignore[misc]
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Generate & Display
@@ -224,18 +297,25 @@ if st.button("🚀 Generate Content"):
     elif compare_mode and len(selected_models) == 0:
         st.warning("Please select at least one model.")
     else:
-        # ── Collect results from each selected model ────────────
-        results = {}  # model_name → (formatted, warnings) or error str
+        # ── Collect results from each selected model (sequentially) ─
+        # Each result is (formatted, warnings, elapsed, actual_model) or error str
+        results = {}
 
-        with st.spinner("Generating…"):
-            for model_name in selected_models:
-                try:
-                    formatted, warnings = generate_for_model(
-                        model_name, prompt, temperature,
-                    )
-                    results[model_name] = (formatted, warnings)
-                except Exception as e:
-                    results[model_name] = str(e)
+        progress_placeholder = st.empty()
+        for i, model_name in enumerate(selected_models):
+            short_name = model_name.split("/")[-1]
+            progress_placeholder.info(
+                f"⏳ Generating with **{short_name}** "
+                f"({i + 1}/{len(selected_models)})…"
+            )
+            try:
+                formatted, warnings, elapsed, actual = generate_for_model(
+                    model_name, prompt, temperature,
+                )
+                results[model_name] = (formatted, warnings, elapsed, actual)
+            except Exception as e:
+                results[model_name] = str(e)
+        progress_placeholder.empty()
 
         # ── Display results ─────────────────────────────────────
         st.subheader("3️⃣  Output")
@@ -245,13 +325,17 @@ if st.button("🚀 Generate Content"):
             tabs = st.tabs([m.split("/")[-1] for m in selected_models])
             for tab, model_name in zip(tabs, selected_models):
                 with tab:
-                    st.caption(f"**Model:** `{model_name}`")
                     result = results.get(model_name)
                     if isinstance(result, str):
-                        # Error string
-                        st.error(f"Error: {result}")
+                        st.caption(f"**Model:** `{model_name}`")
+                        st.error(f"❌ Model failed: {result}")
                     else:
-                        formatted, warnings = result
+                        formatted, warnings, elapsed, actual = result
+                        # Show if fallback was used
+                        if actual != model_name:
+                            st.info(f"⚡ Fallback used: `{actual}` (original `{model_name}` failed)")
+                        st.caption(f"**Model:** `{actual}`")
+                        st.caption(f"⏱️ Response time: **{elapsed}s**")
                         for w in warnings:
                             st.warning(w)
                         if not warnings:
@@ -262,9 +346,12 @@ if st.button("🚀 Generate Content"):
             model_name = selected_models[0]
             result = results.get(model_name)
             if isinstance(result, str):
-                st.error(f"Error: {result}")
+                st.error(f"❌ Model failed: {result}")
             else:
-                formatted, warnings = result
+                formatted, warnings, elapsed, actual = result
+                if actual != model_name:
+                    st.info(f"⚡ Fallback used: `{actual}` (original `{model_name}` failed)")
+                st.caption(f"**Model:** `{actual}` · ⏱️ **{elapsed}s**")
                 for w in warnings:
                     st.warning(w)
                 if not warnings:
