@@ -2,6 +2,10 @@ import argparse
 from dotenv import load_dotenv
 from openai import OpenAI
 import os
+from prompt_templates import (
+    CONTENT_TYPES, TONES, LENGTHS, build_prompt,
+)
+
 
 def generate_content(model, prompt):
     """
@@ -27,14 +31,54 @@ def generate_content(model, prompt):
 def main():
     """
     Main function to parse arguments and run the content generation.
+    Supports both --prompt (manual) and dynamic flags.
     """
-    parser = argparse.ArgumentParser(description="Generate content using AI models from OpenRouter.")
-    parser.add_argument("model", type=str, help="The model to use for content generation (e.g., 'deepseek/deepseek-chat').")
-    parser.add_argument("prompt", type=str, help="The prompt to send to the model.")
-    
+    parser = argparse.ArgumentParser(
+        description="Generate content using AI models from OpenRouter.",
+    )
+    parser.add_argument(
+        "model", type=str,
+        help="The model to use (e.g. 'deepseek/deepseek-chat', 'openai/gpt-oss-120b:free').",
+    )
+
+    # Manual prompt (original behaviour)
+    parser.add_argument(
+        "--prompt", type=str, default=None,
+        help="A manual free-form prompt. If omitted, dynamic-prompt flags are used.",
+    )
+
+    # Dynamic-prompt flags
+    parser.add_argument("--topic", type=str, default="an innovative new product",
+                        help="Topic / idea to write about.")
+    parser.add_argument("--type", type=str, default=CONTENT_TYPES[0],
+                        choices=CONTENT_TYPES, help="Content type.")
+    parser.add_argument("--tone", type=str, default=TONES[0],
+                        choices=TONES, help="Tone / voice.")
+    parser.add_argument("--audience", type=str, default="general audience",
+                        help="Target audience (free text).")
+    parser.add_argument("--length", type=str, default=LENGTHS[0][0],
+                        choices=[l[0] for l in LENGTHS], help="Desired length.")
+    parser.add_argument("--keywords", type=str, default="",
+                        help="Comma-separated keywords to include.")
+
     args = parser.parse_args()
-    
-    generate_content(args.model, args.prompt)
+
+    if args.prompt:
+        prompt = args.prompt
+    else:
+        prompt = build_prompt(
+            content_type=args.type,
+            tone=args.tone,
+            audience=args.audience,
+            length=args.length,
+            keywords=args.keywords,
+            topic=args.topic,
+        )
+        print("[Dynamic Prompt]")
+        print(prompt)
+        print()
+
+    generate_content(args.model, prompt)
 
 if __name__ == "__main__":
     main()
