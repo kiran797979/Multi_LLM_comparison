@@ -1,24 +1,31 @@
 # AI Content Generator
 
-This project is an AI-powered content generator that leverages various large language models (LLMs) through the OpenRouter API. It provides two interfaces for generating content: a user-friendly web application built with Streamlit and a versatile command-line script.
+An AI-powered content generator that uses multiple large language models (LLMs) through the OpenRouter API. It features a Streamlit web app with dynamic prompting, multi-model comparison, and smart prompt suggestions.
 
 ## Features
 
--   **Multiple Model Support:** Easily switch between different LLMs available on OpenRouter, such as DeepSeek, Gemma, and more.
--   **Web Interface:** An intuitive UI built with Streamlit that allows you to select a model, enter a prompt, and view the generated content.
--   **Command-Line Interface:** A script for more advanced users who prefer to generate content from the terminal.
--   **Environment-Based Configuration:** Securely manage your API keys using a `.env` file.
+-   **Dynamic Prompting (Task 2.1 & 2.2):** Configure content type, tone, audience, length, and keywords — the app builds an optimized prompt automatically.
+-   **Multi-Model Comparison:** Toggle "Compare Across Multiple Models" to generate content from all selected models side-by-side in tabs.
+-   **Prompt Suggestions:** Pick from 8 preset ideas (Instagram Ad, Product Launch, etc.) or click "Generate Random Idea" for instant inspiration.
+-   **Live Prompt Preview:** See the dynamically constructed prompt update in real-time as you change inputs.
+-   **Content Validation:** Automatic checks per content type — emails must have a Subject line, LinkedIn posts need hashtags, ads need a CTA.
+-   **Post-Processing:** Output is formatted per content type (bold subject lines, emphasized CTAs, etc.).
+-   **Multiple Interfaces:** Web app (Streamlit), CLI script, and model comparison script.
+-   **Environment-Based Configuration:** API keys managed via `.env` file.
 
 ## Project Structure
 
 ```
 .
-├── .env                  # Stores API keys and other environment variables
-├── .venv/                # Virtual environment directory
-├── app.py                # The main file for the Streamlit web application
-├── generate_content.py   # Command-line script for content generation
-├── requirements.txt      # Lists the Python dependencies for the project
-└── README.md             # This file
+├── .env                    # API keys and environment variables
+├── .venv/                  # Virtual environment
+├── app.py                  # Streamlit web application (main UI)
+├── prompt_templates.py     # Dynamic prompt builder, formatter, and validator
+├── generate_content.py     # CLI script for content generation
+├── compare_models.py       # Side-by-side model comparison script
+├── requirements.txt        # Python dependencies
+├── Milestone_1_Report.md   # Project milestone report
+└── README.md               # This file
 ```
 
 ## Setup
@@ -69,40 +76,54 @@ OPENROUTER_API_KEY="your-openrouter-api-key"
 
 ## Usage
 
-You can generate content using either the Streamlit web app or the command-line script.
+You can generate content using the Streamlit web app, the CLI script, or the comparison script.
 
 ### Using the Streamlit Web App
-
-The web app provides an easy-to-use interface for content generation.
 
 1.  **Run the app:**
     ```bash
     streamlit run app.py
     ```
-2.  **Open your browser:** Navigate to the local URL provided by Streamlit (usually `http://localhost:8501`).
-3.  **Select a model:** Choose from the list of available models.
-4.  **Enter your prompt:** Type your content request into the text area.
-5.  **Generate:** Click the "Generate Content" button to see the output.
+2.  **Open your browser:** Navigate to `http://localhost:8501`.
+3.  **Configure your content:**
+    -   Choose a **Content Type** (LinkedIn Post, Professional Email, or Advertisement Copy).
+    -   Set the **Tone** (Professional, Casual, Persuasive, or Friendly).
+    -   Enter a **Target Audience** and **Topic / Idea**.
+    -   Optionally add **Keywords** and adjust **Content Length**.
+4.  **Use Prompt Suggestions:** Pick a preset from the dropdown or click **"Generate Random Idea"**.
+5.  **Preview the prompt:** Expand the "Generated Prompt Preview" section to see the assembled prompt.
+6.  **Multi-model comparison:** Check "Compare Across Multiple Models" to generate from several models in tabs.
+7.  **Generate:** Click **"Generate Content"** to see the output with validation results.
 
 ### Using the Command-Line Script
 
-The `generate_content.py` script is ideal for terminal-based workflows.
+```bash
+# Dynamic prompt (recommended)
+python generate_content.py "deepseek/deepseek-chat" \
+  --topic "AI study planner app" \
+  --type "LinkedIn Post" \
+  --tone "Professional" \
+  --audience "college students" \
+  --length "Medium" \
+  --keywords "AI, productivity"
 
-1.  **Run the script with arguments:**
-    ```bash
-    python generate_content.py "<model-id>" "<your-prompt>"
-    ```
-2.  **Example:**
-    ```bash
-    python generate_content.py "deepseek/deepseek-chat" "Write a short story about a robot who discovers music."
-    ```
+# Manual prompt
+python generate_content.py "deepseek/deepseek-chat" \
+  --prompt "Write a short story about a robot who discovers music."
+```
+
+### Using the Model Comparison Script
+
+```bash
+python compare_models.py
+```
+
+Generates the same prompt across all three models and prints outputs side-by-side.
 
 ## Available Models
 
-You can use any model available on OpenRouter. Here are a few examples:
-
 -   `deepseek/deepseek-chat`
--   `google/gemma-2-9b-it`
--   `meta-llama/llama-3-8b-instruct`
+-   `mistralai/mistral-7b-instruct`
+-   `openai/gpt-oss-120b:free`
 
-For a full list of available models, please refer to the [OpenRouter documentation](https://openrouter.ai/docs).
+For more models, see the [OpenRouter documentation](https://openrouter.ai/docs).
