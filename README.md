@@ -530,7 +530,7 @@ Streamlit URL: `http://localhost:8501`
 Example:
 
 ```env
-CORS_ORIGINS=http://localhost:5173,https://your-frontend-domain.vercel.app
+CORS_ORIGINS=http://localhost:5173,https://multi-llm-comparison.vercel.app
 ```
 
 ## Usage
@@ -679,7 +679,7 @@ Health check:
 - Start command: `uvicorn api:app --host 0.0.0.0 --port $PORT`
 - Required env:
   - `OPENROUTER_API_KEY=...`
-  - `CORS_ORIGINS=https://your-frontend-domain.vercel.app`
+  - `CORS_ORIGINS=https://multi-llm-comparison.vercel.app`
 
 ### Deploy frontend (Vercel)
 
