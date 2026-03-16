@@ -682,13 +682,13 @@ Health check:
 - Output directory: `dist`
 - Env:
   - `VITE_USE_MOCK=false`
-  - `VITE_API_BASE_URL=https://your-render-service.onrender.com`
+  - `VITE_API_BASE_URL=https://multi-llm-comparison-wrx8.onrender.com`
 
 This repo includes `vercel.json` rewrite rules so SPA routes like `/welcome` and `/login` work on refresh.
 
 ### Post-deploy verification
 
-1. Open backend health URL: `https://your-render-service.onrender.com/health`
+1. Open backend health URL: `https://multi-llm-comparison-wrx8.onrender.com/health`
 2. Confirm response: `{ "status": "ok" }`
 3. Open frontend and run one real generation
 4. Confirm browser console has no CORS/API errors
