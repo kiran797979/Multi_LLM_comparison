@@ -8,6 +8,8 @@ AI Content Studio is a full-stack internship project for generating, comparing, 
 
 ## Project Highlights
 
+- New startup landing page at `/welcome` with a split hero layout and interactive 3D Spline scene
+- Pixel/retro visual theme on landing page only (Press Start 2P + Silkscreen)
 - Multi-model content generation with model switching
 - A/B output comparison with word-level diff
 - Dynamic prompt builder (auto-generated + user-editable)
@@ -28,6 +30,7 @@ AI Content Studio is a full-stack internship project for generating, comparing, 
 - Framer Motion
 - GSAP
 - React Router
+- @splinetool/react-spline
 
 ### Backend
 
@@ -43,6 +46,8 @@ ai-content-studio/
 ├── src/                         # Frontend source
 │   ├── components/
 │   ├── hooks/
+│   ├── pages/
+│   │   └── LandingPage.tsx      # Public startup/marketing page (/welcome)
 │   ├── services/
 │   ├── utils/
 │   └── ...
@@ -94,6 +99,12 @@ npm run dev
 ```
 
 Frontend runs at: `http://localhost:5173`
+
+### App Routes
+
+- `/welcome` (or `/landing`) — public landing page (startup screen)
+- `/login` — authentication page
+- `/` — protected dashboard (requires auth; redirects to `/welcome` if not logged in)
 
 ### 3) Backend Setup
 
