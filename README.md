@@ -1,23 +1,70 @@
 # AI Content Studio
 
-AI Content Studio is a full-stack internship project for generating, comparing, and analyzing AI-written content.
+AI Content Studio is a full-stack project for generating, comparing, and analyzing AI-written content.
 
 - Frontend: React + TypeScript + Vite + Tailwind
-- Backend: Python + Streamlit + OpenRouter API
-- Milestone: M3 (feature-complete update branch)
+- Backend API: FastAPI + OpenRouter (OpenAI SDK)
+- Backend UI: Streamlit (optional companion interface)
+- Milestone branch: `ManojKiran_m3`
 
-## Project Highlights
+## Table of Contents
 
-- New startup landing page at `/welcome` with a split hero layout and interactive 3D Spline scene
-- Pixel/retro visual theme on landing page only (Press Start 2P + Silkscreen)
-- Multi-model content generation with model switching
-- A/B output comparison with word-level diff
-- Dynamic prompt builder (auto-generated + user-editable)
-- Built-in text analysis (readability and quality indicators)
-- Templates modal for quick-start workflows
-- Command palette for keyboard-first actions
-- Login flow with animated UI and protected app route
-- Local history + draft autosave
+- [Overview](#overview)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [API Contract](#api-contract)
+- [Deployment](#deployment)
+- [Troubleshooting](#troubleshooting)
+
+## Overview
+
+This project supports a complete content workflow:
+- Generate content from multiple LLMs
+- Compare A/B outputs with diffing
+- Analyze readability and quality
+- Use templates, command palette, and autosave for faster drafting
+
+Frontend users interact with a modern dashboard and a public landing page (`/welcome`).
+The frontend calls the FastAPI backend at `POST /generate`, and the backend routes requests to OpenRouter.
+
+## Features
+
+### Frontend
+
+- Public startup landing page (`/welcome`, alias `/landing`)
+- Login page and protected dashboard route (`/`)
+- Dynamic prompt builder (auto + editable)
+- A/B model comparison and output tabs
+- Text analysis and content utilities
+- Local autosave and content history
+- Pixel/retro themed landing experience (landing only)
+
+### Backend
+
+- FastAPI endpoint for frontend integration (`/generate`)
+- Health check endpoint (`/health`)
+- Content/tone/length/model mapping layer
+- OpenRouter integration through OpenAI SDK
+- Optional Streamlit interface for standalone usage
+- CLI scripts for generation and model comparison
+
+## Architecture
+
+```text
+React App (Vite)  --->  FastAPI (/generate)  --->  OpenRouter API  --->  LLM
+       |                      |
+       |                      +--> prompt templates + validation/mapping
+       |
+       +--> optional mock mode (frontend only)
+
+Optional parallel backend UI:
+Streamlit app.py (same environment/config)
+```
 
 ## Tech Stack
 
@@ -30,66 +77,65 @@ AI Content Studio is a full-stack internship project for generating, comparing, 
 - Framer Motion
 - GSAP
 - React Router
-- @splinetool/react-spline
+- `@splinetool/react-spline`
 
 ### Backend
 
 - Python 3.10+
+- FastAPI
+- Uvicorn
 - Streamlit
-- OpenAI SDK (used with OpenRouter base URL)
+- OpenAI SDK (with OpenRouter base URL)
 - python-dotenv
 
-## Repository Structure
+## Project Structure
 
 ```text
 ai-content-studio/
-├── src/                         # Frontend source
+├── src/
 │   ├── components/
 │   ├── hooks/
 │   ├── pages/
-│   │   └── LandingPage.tsx      # Public startup/marketing page (/welcome)
+│   │   └── LandingPage.tsx
 │   ├── services/
 │   ├── utils/
 │   └── ...
-├── backend/                     # Streamlit + content generation backend
-│   ├── app.py
+├── backend/
+│   ├── api.py                # FastAPI adapter for frontend
+│   ├── run_api.py            # local API runner
+│   ├── app.py                # Streamlit app
 │   ├── config.py
-│   ├── compare_models.py
-│   ├── generate_content.py
+│   ├── generate_content.py   # CLI content generation
+│   ├── compare_models.py     # CLI model comparison
 │   ├── prompt_templates.py
-│   └── requirements.txt
+│   ├── requirements.txt
+│   └── .env.example
 ├── public/
-├── .env.example                 # Frontend env template
+├── .env.example
+├── vercel.json
 └── README.md
 ```
 
-## Prerequisites
+## Quick Start
 
-- Node.js 18+
-- npm 9+
-- Python 3.10+
-- OpenRouter API key
-
-## Setup
-
-### 1) Clone
+## 1) Clone
 
 ```bash
 git clone https://github.com/Springboard-Internship-2025/Developing-an-AI-System-for-Personalized-Content-Creation-in-Media_Feb_Batch-8_2026.git
 cd Developing-an-AI-System-for-Personalized-Content-Creation-in-Media_Feb_Batch-8_2026
 ```
 
-### 2) Frontend Setup
+## 2) Frontend setup
 
 ```bash
 npm install
 ```
 
-Create `.env` from `.env.example`:
+Create root `.env` from `.env.example`:
 
 ```env
-VITE_API_BASE_URL=http://localhost:8501
-VITE_USE_MOCK=true
+VITE_API_BASE_URL=http://localhost:8000
+VITE_USE_MOCK=false
 ```
 
 Run frontend:
@@ -98,37 +144,20 @@ Run frontend:
 npm run dev
 ```
 
-Frontend runs at: `http://localhost:5173`
+Frontend URL: `http://localhost:5173`
 
-### App Routes
-
-- `/welcome` (or `/landing`) — public landing page (startup screen)
-- `/login` — authentication page
-- `/` — protected dashboard (requires auth; redirects to `/welcome` if not logged in)
-
-### 3) Backend Setup
+## 3) Backend setup
 
 ```bash
 cd backend
-python -m venv venv
+python -m venv .venv
 ```
 
-Activate virtual environment:
+Activate environment:
 
-- Windows (PowerShell):
-```powershell
-.\venv\Scripts\Activate.ps1
-```
-
-- Windows (cmd):
-```bat
-venv\Scripts\activate
-```
-
-- macOS/Linux:
-```bash
-source venv/bin/activate
-```
+- Windows PowerShell: `\.venv\Scripts\Activate.ps1`
+- Windows cmd: `.venv\Scripts\activate`
+- macOS/Linux: `source .venv/bin/activate`
 
 Install backend dependencies:
 
@@ -140,60 +169,75 @@ Create `backend/.env` from `backend/.env.example` and set:
 
 ```env
 OPENROUTER_API_KEY=your-openrouter-api-key
-# optional
+# Optional:
 # DEFAULT_MODEL=deepseek/deepseek-chat
 # DEFAULT_TEMPERATURE=0.7
+# CORS_ORIGINS=http://localhost:5173
 ```
 
-Run backend:
+Run backend API:
+
+```bash
+python run_api.py
+```
+
+Backend API URL: `http://localhost:8000`
+
+Optional Streamlit UI:
 
 ```bash
 streamlit run app.py
 ```
 
-Backend runs at: `http://localhost:8501`
+Streamlit URL: `http://localhost:8501`
 
-## Running Modes
+## Configuration
 
-### Mock Mode (Frontend only)
+### Frontend environment
 
-Use when backend is not running:
+- `VITE_API_BASE_URL` — FastAPI base URL
+- `VITE_USE_MOCK` — `true` to bypass backend and use mock generation
+
+### Backend environment
+
+- `OPENROUTER_API_KEY` (required)
+- `DEFAULT_MODEL` (optional)
+- `DEFAULT_TEMPERATURE` (optional)
+- `CORS_ORIGINS` (optional, comma-separated)
+
+Example:
 
 ```env
-VITE_USE_MOCK=true
+CORS_ORIGINS=http://localhost:5173,https://your-frontend-domain.vercel.app
 ```
 
-### Full-Stack Mode (Real API)
+## Usage
 
-Use frontend with backend:
+### App routes
 
-```env
-VITE_USE_MOCK=false
-VITE_API_BASE_URL=http://localhost:8501
+- `/welcome` or `/landing` — public landing page
+- `/login` — login page
+- `/` — protected dashboard
+
+### CLI examples (backend)
+
+Generate content:
+
+```bash
+python generate_content.py "deepseek/deepseek-chat" --topic "AI productivity for marketers" --type "Blog Post" --tone "Professional" --audience "Marketing teams" --length "Medium" --keywords "AI, productivity"
 ```
 
-## Available Commands
+Compare models:
 
-### Frontend (root)
+```bash
+python compare_models.py --prompt "Create a launch announcement for an AI content platform"
+```
 
-- `npm run dev` — start Vite dev server
-- `npm run build` — type-check and production build
-- `npm run lint` — lint project
-- `npm run preview` — preview production build
+## API Contract
 
-### Backend (`backend/`)
+### `POST /generate`
 
-- `streamlit run app.py` — launch backend UI
-- `python generate_content.py ...` — generate content from CLI
-- `python compare_models.py` — compare outputs across models
-
-## API Contract (Frontend → Backend)
-
-Endpoint used by frontend:
-
-- `POST /generate`
-
-Request payload shape:
+Request body:
 
 ```json
 {
@@ -203,12 +247,12 @@ Request payload shape:
   "targetAudience": "Marketing professionals",
   "keywords": "AI, productivity",
   "topic": "Future of AI content",
-  "model": "deepseek/deepseek-chat",
-  "prompt": "...final prompt text..."
+  "model": "deepseek/deepseek-r1",
+  "prompt": ""
 }
 ```
 
-Expected response:
+Response body:
 
 ```json
 {
@@ -216,18 +260,57 @@ Expected response:
 }
 ```
 
-## Milestone 3 Status
+Health check:
 
-Milestone 3 implementation is complete in this codebase and submitted through feature branch:
+- `GET /health` → `{ "status": "ok" }`
 
-- `ManojKiran_m3`
+## Deployment
+
+### Recommended setup
+
+- Frontend: Vercel
+- Backend API: Render Web Service
+
+### Deploy backend (Render)
+
+- Root directory: `backend`
+- Build command: `pip install -r requirements.txt`
+- Start command: `uvicorn api:app --host 0.0.0.0 --port $PORT`
+- Required env:
+  - `OPENROUTER_API_KEY=...`
+  - `CORS_ORIGINS=https://your-frontend-domain.vercel.app`
+
+### Deploy frontend (Vercel)
+
+- Framework: Vite
+- Build command: `npm run build`
+- Output directory: `dist`
+- Env:
+  - `VITE_USE_MOCK=false`
+  - `VITE_API_BASE_URL=https://your-render-service.onrender.com`
+
+This repo includes `vercel.json` rewrite rules so SPA routes like `/welcome` and `/login` work on refresh.
+
+### Post-deploy verification
+
+1. Open backend health URL: `https://your-render-service.onrender.com/health`
+2. Confirm response: `{ "status": "ok" }`
+3. Open frontend and run one real generation
+4. Confirm browser console has no CORS/API errors
 
 ## Troubleshooting
 
-- If frontend cannot reach backend, verify `VITE_API_BASE_URL` and backend port.
-- If generation fails with API errors, verify `OPENROUTER_API_KEY` in `backend/.env`.
-- If dependencies fail, recreate virtual environment and reinstall requirements.
+- **CORS error in browser**
+  - Ensure backend `CORS_ORIGINS` includes your exact frontend domain.
+- **`OPENROUTER_API_KEY` missing/invalid**
+  - Verify key in `backend/.env` (local) or hosting env vars (production).
+- **Frontend calls wrong URL**
+  - Recheck `VITE_API_BASE_URL` and redeploy frontend after env update.
+- **Generation returns empty/error**
+  - Check backend logs and model ID mapping in `backend/api.py`.
+- **Route refresh 404 on frontend**
+  - Ensure `vercel.json` is present and deployed.
 
-## License
+---
 
-This repository is for internship/project submission use.
+If you want, I can now commit this README improvement and push it to both `origin` and `personal` on `ManojKiran_m3`.

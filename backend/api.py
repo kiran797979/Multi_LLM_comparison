@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException
@@ -13,9 +14,16 @@ from prompt_templates import build_prompt
 
 app = FastAPI(title="AI Content Studio API", version="1.0.0")
 
+
+def _parse_allowed_origins() -> list[str]:
+    raw_value = os.getenv("CORS_ORIGINS", "")
+    if raw_value.strip():
+        return [origin.strip() for origin in raw_value.split(",") if origin.strip()]
+    return ["http://localhost:5173", "http://localhost:5174", "http://localhost:3000"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:3000"],
+    allow_origins=_parse_allowed_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
