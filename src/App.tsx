@@ -34,7 +34,7 @@ const THEME_KEY = "acs-theme";
 
 function App() {
   // ── Theme ─────────────────────────────────────────────────────────────────
-  const [darkMode, setDarkMode] = useState(() => {
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
     const saved = localStorage.getItem(THEME_KEY);
     if (saved === "light") return false;
     if (saved === "dark") return true;
@@ -55,18 +55,18 @@ function App() {
   }));
 
   // ── Generation state ──────────────────────────────────────────────────────
-  const [generatedContent, setGeneratedContent] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [statusMessage, setStatusMessage] = useState("");
-  const [generationCount, setGenerationCount] = useState(0);
+  const [generatedContent, setGeneratedContent] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [statusMessage, setStatusMessage] = useState<string>("");
+  const [generationCount, setGenerationCount] = useState<number>(0);
 
   // ── Editable prompt ───────────────────────────────────────────────────────
   const [editedPrompt, setEditedPrompt] = useState(() => buildPrompt(initialFormData));
 
   // ── UI state ──────────────────────────────────────────────────────────────
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [templatesOpen, setTemplatesOpen] = useState(false);
-  const [surfGameOpen, setSurfGameOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [templatesOpen, setTemplatesOpen] = useState<boolean>(false);
+  const [surfGameOpen, setSurfGameOpen] = useState<boolean>(false);
 
   // ── Hooks ─────────────────────────────────────────────────────────────────
   const { errors, shakeButton, validate, clearError } = useFormValidation(formData);
@@ -80,7 +80,7 @@ function App() {
 
   const handleChange = useCallback(
     <K extends keyof FormData>(key: K, value: FormData[K]) => {
-      setFormData((prev) => {
+      setFormData((prev: FormData) => {
         const next = { ...prev, [key]: value };
         setEditedPrompt(buildPrompt(next));
         return next;
@@ -129,7 +129,7 @@ function App() {
     if (controller.signal.aborted) return;
 
     setGeneratedContent(content);
-    setGenerationCount((c) => c + 1);
+    setGenerationCount((c: number) => c + 1);
 
     if (content.trim()) {
       addEntry(formData.contentType, formData.topic, content);
@@ -160,7 +160,7 @@ function App() {
 
   const handleSelectTemplate = useCallback(
     (template: Template) => {
-      setFormData((prev) => ({
+      setFormData((prev: FormData) => ({
         ...prev,
         contentType: template.contentType,
         tone: template.tone,
@@ -179,7 +179,7 @@ function App() {
     (entry: HistoryEntry) => {
       setGeneratedContent(entry.content);
       // Restore form fields from history if available
-      setFormData((prev) => ({
+      setFormData((prev: FormData) => ({
         ...prev,
         contentType: entry.contentType ?? prev.contentType,
         topic: entry.topic ?? prev.topic,
@@ -191,7 +191,7 @@ function App() {
   );
 
   const toggleTheme = useCallback(() => {
-    setDarkMode((prev) => !prev);
+    setDarkMode((prev: boolean) => !prev);
   }, []);
 
   // ── Command palette actions ───────────────────────────────────────────────
@@ -256,14 +256,14 @@ function App() {
         icon: darkMode
           ? "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
           : "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z",
-        execute: () => setDarkMode((prev) => !prev),
+        execute: () => setDarkMode((prev: boolean) => !prev),
       },
       {
         id: "toggle-sidebar",
         name: "Toggle Sidebar",
         category: "Navigation",
         icon: "M4 6h16M4 12h8m-8 6h16",
-        execute: () => setSidebarOpen((prev) => !prev),
+        execute: () => setSidebarOpen((prev: boolean) => !prev),
       },
       {
         id: "clear-form",
@@ -339,7 +339,7 @@ function App() {
           <div className="flex items-center gap-3">
             {/* Mobile menu toggle */}
             <button
-              onClick={() => setSidebarOpen((p) => !p)}
+              onClick={() => setSidebarOpen((p: boolean) => !p)}
               className="
                 lg:hidden rounded-md p-1.5
                 text-gray-500 hover:text-gray-800 hover:bg-gray-100
