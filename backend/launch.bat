@@ -44,6 +44,7 @@ echo.
 echo [INFO] Launching AI Content Generator...
 echo [INFO] The app will open in your browser shortly...
 echo [INFO] Press Ctrl+C to stop the application
+echo [INFO] To run API adapter separately: uvicorn api:app --host 0.0.0.0 --port 8000 --reload
 echo.
 
 streamlit run app.py --server.headless true

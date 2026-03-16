@@ -96,9 +96,9 @@ function generateEmail(form: FormData): string {
   const length = form.length as "short" | "medium" | "long";
 
   const greeting =
-    form.tone === "friendly" || form.tone === "witty" ? "Hey there," : "Dear valued reader,";
+    form.tone === "friendly" || form.tone === "casual" ? "Hey there," : "Dear valued reader,";
   const signOff =
-    form.tone === "friendly" || form.tone === "witty" ? "Cheers," : "Best regards,";
+    form.tone === "friendly" || form.tone === "casual" ? "Cheers," : "Best regards,";
 
   const core = `Subject: ${form.topic} — What ${form.targetAudience} Need to Know
 

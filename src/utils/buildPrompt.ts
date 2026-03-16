@@ -8,9 +8,15 @@ const lengthGuide: Record<string, string> = {
 
 const contentTypeLabel: Record<string, string> = {
   linkedin: "LinkedIn post",
-  twitter: "Twitter / X thread",
   email: "email",
+  "social-media": "social media post",
+  "product-description": "product description",
   "ad-copy": "advertisement copy",
+  "press-release": "press release",
+  newsletter: "newsletter",
+  "tweet-thread": "tweet thread",
+  "youtube-description": "YouTube description",
+  "sales-pitch": "sales pitch",
   blog: "blog article",
   "landing-page": "landing page copy",
 };

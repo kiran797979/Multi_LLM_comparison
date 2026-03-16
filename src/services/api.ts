@@ -79,8 +79,13 @@ export async function generateContent(
         lastError = buildApiError(`Server error (${res.status}). Retrying...`, res.status, true);
       } else {
         const body = await res.json().catch(() => null);
+        const detail = body?.detail;
+        const detailMessage = typeof detail === "string"
+          ? detail
+          : detail?.message ?? detail?.error;
+
         throw buildApiError(
-          body?.message ?? `Request failed with status ${res.status}.`,
+          body?.message ?? body?.error ?? detailMessage ?? `Request failed with status ${res.status}.`,
           res.status,
           false,
         );

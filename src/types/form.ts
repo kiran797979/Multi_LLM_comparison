@@ -6,19 +6,26 @@
 
 export const contentTypeOptions = [
   { value: "linkedin", label: "LinkedIn Post" },
-  { value: "twitter", label: "Twitter / X Thread" },
   { value: "email", label: "Email" },
-  { value: "ad-copy", label: "Ad Copy" },
   { value: "blog", label: "Blog Article" },
+  { value: "social-media", label: "Social Media" },
+  { value: "product-description", label: "Product Description" },
+  { value: "ad-copy", label: "Ad Copy" },
+  { value: "press-release", label: "Press Release" },
+  { value: "newsletter", label: "Newsletter" },
+  { value: "tweet-thread", label: "Tweet Thread" },
+  { value: "youtube-description", label: "YouTube Description" },
+  { value: "sales-pitch", label: "Sales Pitch" },
   { value: "landing-page", label: "Landing Page" },
 ] as const;
 
 export const toneOptions = [
   { value: "professional", label: "Professional" },
+  { value: "casual", label: "Casual" },
+  { value: "formal", label: "Formal" },
   { value: "friendly", label: "Friendly" },
   { value: "persuasive", label: "Persuasive" },
   { value: "informative", label: "Informative" },
-  { value: "witty", label: "Witty" },
 ] as const;
 
 export const lengthOptions = [
@@ -29,8 +36,11 @@ export const lengthOptions = [
 
 export const modelOptions = [
   { value: "deepseek/deepseek-r1", label: "DeepSeek R1", dot: "bg-emerald-400" },
-  { value: "google/gemini-2.5-flash", label: "Gemini 2.5 Flash", dot: "bg-blue-400" },
-  { value: "openai/gpt-4o-mini", label: "GPT-4o Mini", dot: "bg-amber-400" },
+  { value: "mistralai/mistral-7b", label: "Mistral 7B", dot: "bg-orange-400" },
+  { value: "openai/gpt-4o-mini", label: "GPT-4o Mini", dot: "bg-emerald-400" },
+  { value: "meta-llama/llama-3.2-90b", label: "LLaMA 3.2 90B", dot: "bg-violet-400" },
+  { value: "google/gemini-2.5-flash", label: "Gemini Flash", dot: "bg-cyan-400" },
+  { value: "qwen/qwen-2.5-72b", label: "Qwen 2.5 72B", dot: "bg-rose-400" },
 ] as const;
 
 // ── Union types derived from option arrays ──────────
