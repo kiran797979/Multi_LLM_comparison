@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
 import LoginPage from './components/LoginPage.tsx'
+import LandingPage from './pages/LandingPage.tsx'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuth = localStorage.getItem('acs-authenticated') === 'true'
@@ -15,6 +16,7 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/welcome" element={<LandingPage />} />
         <Route
           path="/*"
           element={
