@@ -114,11 +114,11 @@ function ActionBtn({
       aria-label={label}
       title={label}
       className={[
-        "p-1.5 rounded-md transition-colors duration-100",
+        "p-1.5 rounded-md transition-all duration-200 active:scale-95 hover:-translate-y-0.5",
         "outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40",
         active
-          ? "bg-blue-100 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
-          : "text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-zinc-500 dark:hover:text-zinc-300 dark:hover:bg-zinc-800",
+          ? "bg-blue-100 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 shadow-sm"
+          : "text-gray-400 hover:text-gray-700 hover:bg-gray-100 hover:shadow-sm dark:text-zinc-500 dark:hover:text-zinc-300 dark:hover:bg-zinc-800",
       ].join(" ")}
     >
       <Icon d={icon} />
@@ -320,7 +320,7 @@ export default function OutputPreview({
       if (version === "A") {
         onCopy?.();
       } else {
-        navigator.clipboard.writeText(variantB).catch(() => {});
+        navigator.clipboard.writeText(variantB).catch(() => { });
       }
       setAbMode(false);
     },
@@ -337,8 +337,8 @@ export default function OutputPreview({
   return (
     <div className="p-4 h-full flex flex-col">
       {/* ── Header row ─────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between mb-3 gap-2">
-        <div className="flex items-center gap-3 min-w-0">
+      <div className="flex flex-wrap items-center justify-between mb-3 gap-y-2 gap-x-4">
+        <div className="flex items-center gap-3 min-w-0 flex-wrap">
           <h2
             className="
               text-xs font-semibold uppercase tracking-wider shrink-0
@@ -422,10 +422,10 @@ export default function OutputPreview({
               <motion.div
                 key="ab"
                 className="flex-1 flex flex-col min-h-0"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
+                initial={{ opacity: 0, y: 15, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.15 } }}
+                transition={{ duration: 0.4, type: "spring", bounce: 0.3 }}
               >
                 <ABComparison
                   versionA={output}
@@ -437,10 +437,10 @@ export default function OutputPreview({
               <motion.div
                 key="tabs"
                 className="flex-1 flex flex-col min-h-0"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
+                initial={{ opacity: 0, y: 15, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.15 } }}
+                transition={{ duration: 0.4, type: "spring", bounce: 0.3 }}
               >
                 <OutputTabs
                   output={output}
@@ -452,10 +452,10 @@ export default function OutputPreview({
           ) : isLoading ? (
             <motion.div
               key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.15 } }}
+              transition={{ duration: 0.3 }}
               className="flex-1"
             >
               <LoadingSkeleton />
@@ -463,10 +463,10 @@ export default function OutputPreview({
           ) : (
             <motion.div
               key="empty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.15 } }}
+              transition={{ duration: 0.3 }}
               className="flex-1"
             >
               <EmptyState />

@@ -502,11 +502,11 @@ function App() {
         />
 
         {/* Main area — Form + Output */}
-        <main className="flex flex-1 flex-col overflow-hidden md:flex-row">
+        <main className="flex flex-1 flex-col md:flex-row overflow-y-auto md:overflow-hidden relative pb-10 md:pb-0">
           {/* Form panel */}
           <div
             className="
-              w-full shrink-0 overflow-y-auto
+              w-full flex-none md:shrink-0 md:overflow-y-auto
               border-b md:border-b-0 md:border-r
               border-gray-200 dark:border-zinc-800
               md:w-[440px] md:min-w-[360px] md:max-w-[480px]
@@ -530,7 +530,7 @@ function App() {
           {/* Output panel */}
           <div
             className="
-              flex-1 overflow-y-auto
+              flex-1 min-h-[500px] md:min-h-0 md:overflow-y-auto
               bg-white dark:bg-transparent
             "
           >

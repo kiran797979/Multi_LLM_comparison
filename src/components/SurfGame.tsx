@@ -687,7 +687,7 @@ export default function SurfGame({ isOpen, onClose }: SurfGameProps) {
                 ref={canvasRef}
                 width={W}
                 height={H}
-                className="block w-full select-none rounded-xl border border-zinc-800 bg-black/20"
+                className="block w-full select-none touch-none rounded-xl border border-zinc-700 bg-black/20 shadow-inner"
                 onPointerDown={(e) => {
                   e.preventDefault();
                   requestJump();

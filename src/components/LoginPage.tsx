@@ -161,7 +161,7 @@ export default function LoginPage() {
     let startX = 0;
     let startY = 0;
 
-    const toggleRef = { toggle: () => {} };
+    const toggleRef = { toggle: () => { } };
     toggleRef.toggle = () => {
       /* cord bounce animation */
       const tl = gsap.timeline();
@@ -201,13 +201,13 @@ export default function LoginPage() {
     });
 
     /* expose toggle for the Draggable callback */
-    (window as unknown as Record<string, () => void>).__lampToggle = () => {};
+    (window as unknown as Record<string, () => void>).__lampToggle = () => { };
 
     // Cleanup
     return () => {
       delete (window as unknown as Record<string, (() => void) | undefined>).__lampToggle;
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   /* keep the global toggle callback current */
   useEffect(() => {

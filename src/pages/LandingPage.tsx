@@ -240,20 +240,8 @@ export default function LandingPage() {
   const [navSolid, setNavSolid] = useState(false)
 
   useEffect(() => {
-    const media = window.matchMedia('(max-width: 639px)')
-
-    const apply = (matches: boolean) => {
-      setDisableSpline(matches)
-    }
-
-    apply(media.matches)
-
-    const onChange = (event: MediaQueryListEvent) => {
-      apply(event.matches)
-    }
-
-    media.addEventListener('change', onChange)
-    return () => media.removeEventListener('change', onChange)
+    // Retain this effect but remove the mobile disabling logic so Spline renders on all devices
+    setDisableSpline(false)
   }, [])
 
   useEffect(() => {
