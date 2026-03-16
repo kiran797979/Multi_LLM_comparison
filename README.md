@@ -81,6 +81,12 @@ AI Content Studio is a full-stack project for generating, comparing, and analyzi
 - Backend UI: Streamlit (optional companion interface)
 - Milestone branch: `ManojKiran_m3`
 
+## Live Deployment
+
+- Frontend: `https://multi-llm-comparison.vercel.app/welcome`
+- Backend API: `https://multi-llm-comparison-wrx8.onrender.com`
+- Backend Health: `https://multi-llm-comparison-wrx8.onrender.com/health`
+
 ## Table of Contents
 
 - [Overview](#overview)

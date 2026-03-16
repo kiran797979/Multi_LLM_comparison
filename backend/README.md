@@ -20,6 +20,12 @@
 
 </div>
 
+## 🌐 Live Deployment
+
+- **Frontend**: https://multi-llm-comparison.vercel.app/welcome
+- **Backend API**: https://multi-llm-comparison-wrx8.onrender.com
+- **Health Check**: https://multi-llm-comparison-wrx8.onrender.com/health
+
 ## 📋 Table of Contents
 
 - [🌟 Overview](#-overview)
