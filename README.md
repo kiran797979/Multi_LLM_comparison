@@ -271,6 +271,13 @@ Health check:
 - Frontend: Vercel
 - Backend API: Render Web Service
 
+### Backend via Render Blueprint (fastest)
+
+- This repo includes `render.yaml` at root.
+- In Render: **New +** → **Blueprint** → select this repo/branch.
+- After first deploy, set `OPENROUTER_API_KEY` in service environment variables.
+- Update `CORS_ORIGINS` to your real Vercel URL.
+
 ### Deploy backend (Render)
 
 - Root directory: `backend`
