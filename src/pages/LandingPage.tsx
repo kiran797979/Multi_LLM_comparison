@@ -388,7 +388,7 @@ export default function LandingPage() {
             subtitle="The talented individuals behind the development and design of AI Content Studio."
           />
 
-          <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
             {features.map((feature, index) => (
               <motion.article
                 key={feature.title}
