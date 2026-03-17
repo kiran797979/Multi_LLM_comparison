@@ -23,7 +23,7 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<HomeRoute />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/welcome" element={<Navigate to="/" replace />} />
+        <Route path="/welcome" element={<LandingPage />} />
         <Route
           path="/*"
           element={

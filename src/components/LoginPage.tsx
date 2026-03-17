@@ -36,7 +36,7 @@ export default function LoginPage() {
 
   /* ── state ── */
   const [currentForm, setCurrentForm] = useState<"signin" | "signup">("signin");
-  const [lampOn, setLampOn] = useState(false);
+  const [lampOn, setLampOn] = useState(true);
   const [hintHidden, setHintHidden] = useState(false);
 
   // sign-in fields
@@ -157,6 +157,24 @@ export default function LoginPage() {
 
     const proxy = document.createElement("div");
     gsap.set(proxy, { x: ENDX, y: ENDY });
+
+    if (lampOn) {
+      const hue = randomHue();
+      page.style.setProperty("--on", "1");
+      page.style.setProperty("--shade-hue", String(hue));
+      page.style.setProperty("--glow-color", `hsl(${hue}, 40%, 45%)`);
+      page.style.setProperty("--glow-color-dark", `hsl(${hue}, 40%, 35%)`);
+
+      setHintHidden(true);
+      const active = currentForm === "signin" ? signinRef.current : signupRef.current;
+      active?.classList.add("active");
+
+      page.querySelectorAll<SVGElement>(".lamp__eye").forEach((eye) => {
+        gsap.set(eye, { rotate: 0, transformOrigin: "50% 50%", yPercent: 50 });
+      });
+
+      setTimeout(() => syncHeight(currentForm), 50);
+    }
 
     let startX = 0;
     let startY = 0;
