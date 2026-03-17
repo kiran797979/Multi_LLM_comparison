@@ -69,7 +69,7 @@ export const initialFormData: FormData = {
   length: "medium",
   targetAudience: "",
   keywords: "",
-  model: "deepseek/deepseek-r1",
+  model: "google/gemini-2.5-flash",
 };
 
 // ── Validation ──────────────────────────────────────

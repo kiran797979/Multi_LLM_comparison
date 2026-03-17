@@ -5,21 +5,14 @@ import FormField from "../ui/FormField";
 import Dropdown from "../ui/Dropdown";
 import TextArea from "../ui/TextArea";
 import TextInput from "../ui/TextInput";
-import ModelSelector from "./ModelSelector";
 
-import { contentTypeOptions, toneOptions, lengthOptions, modelOptions } from "../types/form";
+import { contentTypeOptions, toneOptions, lengthOptions } from "../types/form";
 
 const contentTypes = contentTypeOptions.map((o) => ({ label: o.label, value: o.value }));
 const tones = toneOptions.map((o) => ({ label: o.label, value: o.value }));
 const lengths = lengthOptions.map((o) => ({ label: o.label, value: o.value }));
 
-const modelNames: Record<string, string> = Object.fromEntries(
-  modelOptions.map((m) => [m.value, m.label]),
-);
 
-const modelDots: Record<string, string> = Object.fromEntries(
-  modelOptions.map((m) => [m.value, m.dot]),
-);
 
 const TOPIC_MAX = 300;
 
@@ -48,7 +41,6 @@ export default function ContentForm({
   editedPrompt,
   onPromptChange,
 }: ContentFormProps) {
-  const [modelOpen, setModelOpen] = useState(false);
   const [promptOpen, setPromptOpen] = useState(false);
 
   useEffect(() => {
@@ -335,73 +327,6 @@ export default function ContentForm({
           )}
         </AnimatePresence>
 
-        {/* Model selector (secondary) */}
-        <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800/60">
-          <button
-            onClick={() => setModelOpen((p) => !p)}
-            type="button"
-            className="group flex w-full items-center gap-2 rounded py-1 text-xs text-zinc-500 transition-colors duration-150 hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-blue-500/40 outline-none dark:hover:text-zinc-300"
-            aria-expanded={modelOpen}
-          >
-            <span
-              aria-hidden="true"
-              className={[
-                "h-1.5 w-1.5 shrink-0 rounded-full",
-                modelDots[formData.model] ?? "bg-zinc-400",
-              ].join(" ")}
-            />
-            <span className="min-w-0 truncate text-zinc-700 dark:text-zinc-300">
-              Model: {modelNames[formData.model] ?? formData.model}
-            </span>
-            <span className="text-zinc-300 dark:text-zinc-700">·</span>
-            <span className="text-[11px] text-blue-500 transition-colors group-hover:text-blue-400">
-              {modelOpen ? "Close" : "Change"}
-            </span>
-
-            <svg
-              width="10"
-              height="10"
-              viewBox="0 0 10 10"
-              fill="none"
-              className={[
-                "ml-auto shrink-0 text-zinc-400 transition-transform duration-150 dark:text-zinc-600",
-                modelOpen ? "rotate-180" : "",
-              ].join(" ")}
-              aria-hidden="true"
-            >
-              <path
-                d="M2 3.5L5 6.5L8 3.5"
-                stroke="currentColor"
-                strokeWidth="1.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
-
-        <AnimatePresence>
-          {modelOpen && (
-            <motion.div
-              key="model-picker"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.15, ease: "easeOut" }}
-              className="overflow-hidden"
-            >
-              <div className="pt-1 pb-1">
-                <ModelSelector
-                  selectedModel={formData.model}
-                  onModelChange={(m) => {
-                    handleChange("model", m as FormData["model"]);
-                    setModelOpen(false);
-                  }}
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   );

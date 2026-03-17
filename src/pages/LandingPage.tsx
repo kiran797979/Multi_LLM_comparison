@@ -13,13 +13,7 @@ type FeatureItem = {
   glow: string
 }
 
-type ModelItem = {
-  emoji: string
-  name: string
-  strength: string
-  accent: string
-  glow: string
-}
+
 
 const headlineFont: CSSProperties = { fontFamily: "'Press Start 2P', cursive" }
 const bodyFont: CSSProperties = { fontFamily: "'Silkscreen', cursive" }
@@ -29,109 +23,70 @@ const features: FeatureItem[] = [
   {
     iconPattern: [
       '00111100',
-      '01000010',
-      '10100101',
-      '10111101',
-      '10111101',
-      '10000001',
-      '01000010',
+      '01111110',
+      '11111111',
+      '11111111',
+      '11111111',
+      '11111111',
+      '01111110',
       '00111100',
     ],
     iconColor: '#818cf8',
-    title: 'Multi-Model Generation',
-    description: 'Compare outputs from 6 leading AI models side by side',
+    title: 'Manoj Kiran',
+    description: 'Lead Developer & Architect',
     glow: 'rgba(79, 70, 229, 0.32)',
   },
   {
     iconPattern: [
-      '00011000',
-      '00110000',
-      '01100000',
-      '11111100',
-      '00001100',
-      '00011000',
-      '00110000',
-      '01100000',
+      '00111100',
+      '01111110',
+      '11111111',
+      '11111111',
+      '11111111',
+      '11111111',
+      '01111110',
+      '00111100',
     ],
     iconColor: '#facc15',
-    title: 'A/B Content Testing',
-    description: 'Word-level diff comparison to pick the perfect version',
+    title: 'Sneha Deepika',
+    description: 'Frontend Developer',
     glow: 'rgba(249, 115, 22, 0.28)',
   },
   {
     iconPattern: [
-      '00011000',
       '00111100',
       '01111110',
       '11111111',
+      '11111111',
+      '11111111',
+      '11111111',
       '01111110',
       '00111100',
-      '00011000',
-      '00011000',
     ],
     iconColor: '#34d399',
-    title: 'Smart Templates',
-    description: '12+ content types with industry-specific prompt templates',
+    title: 'Sathvika',
+    description: 'UI/UX Designer',
     glow: 'rgba(16, 185, 129, 0.28)',
   },
   {
     iconPattern: [
-      '10000000',
-      '10011000',
-      '10111100',
-      '10111110',
-      '10111111',
-      '10111100',
-      '10011000',
-      '10000000',
-    ],
-    iconColor: '#a78bfa',
-    title: 'Quality Analysis',
-    description: 'Readability scoring, SEO checks, and tone validation',
-    glow: 'rgba(139, 92, 246, 0.3)',
-  },
-  {
-    iconPattern: [
       '00111100',
       '01111110',
       '11111111',
-      '11100111',
+      '11111111',
+      '11111111',
       '11111111',
       '01111110',
-      '00100100',
-      '00011000',
+      '00111100',
     ],
     iconColor: '#fb7185',
-    title: 'Dynamic Prompts',
-    description: 'Auto-generated prompts you can inspect and fine-tune',
+    title: 'Ushasri',
+    description: 'Content Strategist',
     glow: 'rgba(244, 63, 94, 0.28)',
-  },
-  {
-    iconPattern: [
-      '11111110',
-      '10000010',
-      '10111110',
-      '10100010',
-      '10100010',
-      '10111110',
-      '10000010',
-      '11111110',
-    ],
-    iconColor: '#22d3ee',
-    title: 'History & Drafts',
-    description: 'Auto-saved drafts and full generation history',
-    glow: 'rgba(34, 211, 238, 0.28)',
   },
 ]
 
-const models: ModelItem[] = [
-  { emoji: '🧠', name: 'DeepSeek', strength: 'Reasoning', accent: '#4f8ef7', glow: 'rgba(79, 142, 247, 0.45)' },
-  { emoji: '⚡', name: 'Mistral 7B', strength: 'Speed', accent: '#f97316', glow: 'rgba(249, 115, 22, 0.45)' },
-  { emoji: '🚀', name: 'GPT OSS 120B', strength: 'Versatility', accent: '#10b981', glow: 'rgba(16, 185, 129, 0.45)' },
-  { emoji: '🦙', name: 'LLaMA 3.2', strength: 'Creativity', accent: '#a855f7', glow: 'rgba(168, 85, 247, 0.45)' },
-  { emoji: '💎', name: 'Gemini Flash', strength: 'Structure', accent: '#06b6d4', glow: 'rgba(6, 182, 212, 0.45)' },
-  { emoji: '🌟', name: 'Qwen 2.5', strength: 'Multilingual', accent: '#f43f5e', glow: 'rgba(244, 63, 94, 0.45)' },
-]
+
 
 function PixelLogo() {
   return (
@@ -162,24 +117,7 @@ function PixelIcon({ pattern, color }: { pattern: string[]; color: string }) {
   )
 }
 
-function PixelModelBadge({ emoji, accent }: { emoji: string; accent: string }) {
-  return (
-    <div className="inline-flex items-center gap-2">
-      <div className="border-2 border-dashed p-1.5" style={{ borderColor: accent }}>
-        <span className="text-xl leading-none">{emoji}</span>
-      </div>
-      <div className="grid grid-cols-4 gap-[2px]">
-        {Array.from({ length: 16 }).map((_, index) => (
-          <span
-            key={index}
-            className="size-[3px]"
-            style={{ backgroundColor: index % 2 === 0 ? accent : 'rgba(255,255,255,0.18)' }}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
+
 
 function PixelDivider() {
   const colors = ['#818cf8', '#a855f7', '#818cf8', '#a855f7', '#818cf8', '#a855f7', '#818cf8']
@@ -273,7 +211,7 @@ export default function LandingPage() {
     backgroundSize: '22px 22px',
   }
 
-  const scrollToSection = (id: 'features' | 'models') => {
+  const scrollToSection = (id: 'features') => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
@@ -296,8 +234,7 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-5 sm:gap-6">
-            <NavLink label="Features" onClick={() => scrollToSection('features')} />
-            <NavLink label="Models" onClick={() => scrollToSection('models')} />
+            <NavLink label="Contributors" onClick={() => scrollToSection('features')} />
             <button
               type="button"
               onClick={goToLogin}
@@ -328,7 +265,7 @@ export default function LandingPage() {
                 />
                 <div className="inline-flex items-center gap-2 border-2 border-emerald-400/40 bg-emerald-500/10 px-4 py-1.5 text-xs text-emerald-300" style={bodyFont}>
                   <span className="size-2 bg-emerald-300" />
-                  Powered by 6 AI Models
+                  Built by the Team
                 </div>
               </div>
 
@@ -343,7 +280,7 @@ export default function LandingPage() {
               </h1>
 
               <p className="mt-6 max-w-2xl text-sm leading-relaxed text-white/70 md:text-base" style={bodyFont}>
-                Compare outputs from DeepSeek, Mistral, GPT, LLaMA, Gemini & Qwen. Generate professional content in seconds.
+                Professional content generation across multiple styles and formats. Powered by advanced AI to help you create better content in seconds.
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -447,8 +384,8 @@ export default function LandingPage() {
         <div className="pointer-events-none absolute inset-0" style={sectionDotsStyle} />
         <div className="relative z-10">
           <SectionTitle
-            title="Everything You Need"
-            subtitle="Build, compare, and refine high-converting content with a workflow designed for creators and teams."
+            title="Contributors"
+            subtitle="The talented individuals behind the development and design of AI Content Studio."
           />
 
           <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -481,64 +418,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <PixelDivider />
 
-      <section id="models" className="relative min-h-svh overflow-hidden px-4 py-24 sm:px-6 lg:px-8">
-        <div className="pointer-events-none absolute inset-0" style={sectionDotsStyle} />
-        <div className="relative z-10">
-          <SectionTitle
-            title="6 Models. One Studio."
-            subtitle="Pick the best AI for every content type"
-          />
 
-          <motion.div
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.3 }}
-            variants={{
-              hidden: { opacity: 0 },
-              show: {
-                opacity: 1,
-                transition: {
-                  staggerChildren: 0.08,
-                },
-              },
-            }}
-            className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-4"
-          >
-            {models.map((model) => {
-              const accentStyles: CSSProperties = {
-                color: model.accent,
-              }
 
-              return (
-                <motion.article
-                  key={model.name}
-                  variants={{ hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0 } }}
-                  whileHover={{ scale: 1.03, y: -4 }}
-                  className="w-full border-2 border-dashed border-white/25 bg-white/[0.03] px-5 py-4 text-center transition sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.75rem)]"
-                  onMouseEnter={(event) => {
-                    event.currentTarget.style.boxShadow = `0 12px 42px -20px ${model.glow}`
-                  }}
-                  onMouseLeave={(event) => {
-                    event.currentTarget.style.boxShadow = '0 0 0 rgba(0,0,0,0)'
-                  }}
-                >
-                  <div className="flex justify-center">
-                    <PixelModelBadge emoji={model.emoji} accent={model.accent} />
-                  </div>
-                  <h3 className="mt-3 text-sm font-semibold text-white md:text-base" style={bodyFont}>{model.name}</h3>
-                  <p className="mt-1 text-sm font-medium" style={{ ...accentStyles, ...bodyFont }}>
-                    {model.strength}
-                  </p>
-                </motion.article>
-              )
-            })}
-          </motion.div>
-        </div>
-      </section>
 
-      <PixelDivider />
+
 
       <section className="relative flex min-h-svh items-center justify-center overflow-hidden px-4 py-24 text-center sm:px-6 lg:px-8">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.24),transparent_55%)]" />
