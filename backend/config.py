@@ -7,8 +7,6 @@ Handles environment variables and application settings.
 import os
 
 from dotenv import load_dotenv
-import streamlit as st
-
 # Load environment variables
 load_dotenv()
 
@@ -24,11 +22,6 @@ class Config:
     # Default Model Settings
     DEFAULT_MODEL: str = os.getenv("DEFAULT_MODEL", "deepseek/deepseek-chat")
     DEFAULT_TEMPERATURE: float = float(os.getenv("DEFAULT_TEMPERATURE", "0.7"))
-
-    # Streamlit Configuration
-    STREAMLIT_PAGE_TITLE: str = "AI Content Generator"
-    STREAMLIT_PAGE_ICON: str = "✍️"
-    STREAMLIT_LAYOUT: str = "wide"
 
     # Content Generation Settings
     MAX_RETRIES: int = 2
@@ -72,29 +65,3 @@ class Config:
         }
         return model_names.get(model, model.split("/")[-1])
 
-
-def show_api_key_setup():
-    """Display API key setup instructions in Streamlit."""
-    st.error("🔑 **API Key Required**")
-    st.markdown("""
-    To use this app, you need an OpenRouter API key:
-    
-    1. 🌐 Go to [openrouter.ai](https://openrouter.ai/)
-    2. 📝 Create an account
-    3. 🔑 Generate an API key
-    4. 📄 Copy `.env.example` to `.env`
-    5. ✏️ Add your API key to the `.env` file
-    6. 🔄 Restart the application
-    
-    **Example `.env` file:**
-    ```
-    OPENROUTER_API_KEY="your-actual-api-key-here"
-    ```
-    """)
-    st.stop()
-
-
-def validate_environment():
-    """Validate that all required environment variables are set."""
-    if not Config.validate_api_key():
-        show_api_key_setup()

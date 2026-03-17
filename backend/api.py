@@ -31,22 +31,9 @@ app.add_middleware(
 
 
 class GenerateRequest(BaseModel):
-    contentType: Literal[
-        "linkedin",
-        "email",
-        "blog",
-        "social-media",
-        "product-description",
-        "ad-copy",
-        "press-release",
-        "newsletter",
-        "tweet-thread",
-        "youtube-description",
-        "sales-pitch",
-        "landing-page",
-    ]
-    tone: Literal["professional", "casual", "persuasive", "informative", "friendly", "formal"]
-    length: Literal["short", "medium", "long"]
+    contentType: str
+    tone: str
+    length: str
     targetAudience: str = Field(default="")
     keywords: str = Field(default="")
     topic: str = Field(default="")
@@ -90,11 +77,11 @@ LENGTH_MAP = {
 
 MODEL_MAP = {
     "deepseek/deepseek-r1": "deepseek/deepseek-chat",
-    "google/gemini-2.5-flash": "google/gemini-flash-1.5:free",
-    "openai/gpt-4o-mini": "openai/gpt-oss-120b:free",
-    "meta-llama/llama-3.2-90b": "meta-llama/llama-3.2-90b-vision-instruct:free",
+    "google/gemini-2.5-flash": "google/gemini-flash-1.5",
+    "openai/gpt-4o-mini": "openai/gpt-3.5-turbo",
+    "meta-llama/llama-3.2-90b": "meta-llama/llama-3.1-8b-instruct:free",
     "mistralai/mistral-7b": "mistralai/mistral-7b-instruct:free",
-    "qwen/qwen-2.5-72b": "qwen/qwen-2.5-72b-instruct:free",
+    "qwen/qwen-2.5-72b": "qwen/qwen-2.5-72b-instruct",
 }
 
 PROMPT_TEMPLATE_CONTENT_TYPE_COMPAT_MAP = {
@@ -105,45 +92,53 @@ PROMPT_TEMPLATE_CONTENT_TYPE_COMPAT_MAP = {
 
 
 def _map_content_type(value: str) -> str:
-    mapped = CONTENT_TYPE_MAP.get(value, value)
+    mapped = CONTENT_TYPE_MAP.get(value.lower(), value)
     return PROMPT_TEMPLATE_CONTENT_TYPE_COMPAT_MAP.get(mapped, mapped)
 
 
 def _map_tone(value: str) -> str:
-    return TONE_MAP.get(value, value)
+    return TONE_MAP.get(value.lower(), value)
 
 
 def _map_length(value: str) -> str:
-    return LENGTH_MAP.get(value, value)
+    return LENGTH_MAP.get(value.lower(), value)
 
 
 def _map_model(value: str) -> str:
+    if not value:
+        return "google/gemini-flash-1.5"
     return MODEL_MAP.get(value, value)
 
 
 def _build_effective_prompt(payload: GenerateRequest, mapped_content_type: str, mapped_tone: str, mapped_length: str) -> str:
-    if payload.prompt.strip():
+    if payload.prompt and payload.prompt.strip():
         return payload.prompt.strip()
 
-    if not payload.topic.strip():
+    if not payload.topic or not payload.topic.strip():
         raise HTTPException(status_code=400, detail={"error": "topic is required when prompt is empty", "message": "topic is required when prompt is empty"})
-
-    if not payload.targetAudience.strip():
-        raise HTTPException(status_code=400, detail={"error": "targetAudience is required when prompt is empty", "message": "targetAudience is required when prompt is empty"})
 
     return build_prompt(
         content_type=mapped_content_type,
         tone=mapped_tone,
-        audience=payload.targetAudience,
+        audience=payload.targetAudience or "General",
         length=mapped_length,
-        keywords=payload.keywords,
+        keywords=payload.keywords or "",
         topic=payload.topic,
     )
 
 
 def _get_client() -> OpenAI:
     if not Config.validate_api_key():
-        raise HTTPException(status_code=500, detail={"error": "OPENROUTER_API_KEY is missing or invalid", "message": "OPENROUTER_API_KEY is missing or invalid"})
+        # Look for the key again just in case it was set after startup
+        Config.OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+        if not Config.validate_api_key():
+            raise HTTPException(
+                status_code=500, 
+                detail={
+                    "error": "Configuration Error", 
+                    "message": "OPENROUTER_API_KEY is missing. Please set it in Render environment variables."
+                }
+            )
 
     return OpenAI(
         api_key=Config.OPENROUTER_API_KEY,
@@ -170,14 +165,14 @@ def root() -> dict[str, str]:
 
 @app.post("/generate", response_model=GenerateResponse)
 def generate(payload: GenerateRequest) -> GenerateResponse:
-    mapped_content_type = _map_content_type(payload.contentType)
-    mapped_tone = _map_tone(payload.tone)
-    mapped_length = _map_length(payload.length)
-    mapped_model = _map_model(payload.model)
-
-    prompt_text = _build_effective_prompt(payload, mapped_content_type, mapped_tone, mapped_length)
-
     try:
+        mapped_content_type = _map_content_type(payload.contentType)
+        mapped_tone = _map_tone(payload.tone)
+        mapped_length = _map_length(payload.length)
+        mapped_model = _map_model(payload.model)
+
+        prompt_text = _build_effective_prompt(payload, mapped_content_type, mapped_tone, mapped_length)
+
         client = _get_client()
         response = client.chat.completions.create(
             model=mapped_model,
@@ -186,11 +181,22 @@ def generate(payload: GenerateRequest) -> GenerateResponse:
 
         content = (response.choices[0].message.content or "").strip()
         if not content:
-            raise HTTPException(status_code=500, detail={"error": "Model returned empty content", "message": "Model returned empty content"})
+            raise HTTPException(status_code=500, detail={"error": "Model Error", "message": "Model returned empty content"})
 
         return GenerateResponse(content=content)
 
-    except HTTPException:
-        raise
+    except HTTPException as e:
+        raise e
     except Exception as exc:
-        raise HTTPException(status_code=500, detail={"error": str(exc), "message": str(exc)}) from exc
+        error_msg = str(exc)
+        # Check for specific transit errors
+        if "api_key" in error_msg.lower():
+            error_msg = "Invalid OpenRouter API Key. Please check your Render environment variables."
+        elif "model" in error_msg.lower():
+            error_msg = f"Model error: {error_msg}. Try using a different model or check your model ID."
+            
+        raise HTTPException(
+            status_code=500, 
+            detail={"error": "Internal Server Error", "message": error_msg, "trace": error_msg}
+        ) from exc
+
