@@ -11,6 +11,8 @@ A production-oriented, full-stack AI content generation studio. Generate, compar
 
 AI Content Studio supports a professional content drafting workflow:
 - **Multi-Model Generation:** Use DeepSeek, Gemini, GPT, Llama, Mistral, and Qwen via OpenRouter.
+- Backend API: `https://ai-content-creator-api-u9hy.onrender.com`
+- Backend Health: `https://ai-content-creator-api-u9hy.onrender.com/health`
 - **A/B Comparison:** Side-by-side output comparison with word-level diff highlighting.
 - **Smart Analysis:** Real-time readability scores (Flesch), tone analysis, and text metrics.
 - **Modern UX:** Interactive GSAP-animated login, ⌘K command palette, and a pixel-retro landing page.
@@ -94,7 +96,7 @@ npm install
 
 # Configure environment
 # Create .env from .env.example
-# Set VITE_API_BASE_URL to your backend URL (e.g. http://localhost:8000)
+# Set VITE_API_BASE_URL=https://ai-content-creator-api-u9hy.onrender.com
 # Set VITE_USE_MOCK=false to use real AI generation
 
 # Start dev server
