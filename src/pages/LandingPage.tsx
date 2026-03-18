@@ -177,6 +177,28 @@ export default function LandingPage() {
   const [splineLoaded, setSplineLoaded] = useState(false)
   const [navSolid, setNavSolid] = useState(false)
 
+  // ── Auto-redirect to /login after the welcome animation ──────────────────
+  useEffect(() => {
+    // If already authenticated, skip the entire intro and go straight to app
+    const isAuth = localStorage.getItem('acs-authenticated') === 'true'
+    if (isAuth) {
+      navigate('/', { replace: true })
+      return
+    }
+
+    // If the user has already seen the welcome page this session, skip delay
+    const alreadySeen = sessionStorage.getItem('acs-welcome-seen') === 'true'
+    sessionStorage.setItem('acs-welcome-seen', 'true')
+
+    const delay = alreadySeen ? 0 : 3500  // 3.5 s on first visit
+    const timer = setTimeout(() => {
+      navigate('/login', { replace: true })
+    }, delay)
+
+    return () => clearTimeout(timer)
+  }, [navigate])
+  // ─────────────────────────────────────────────────────────────────────────
+
   useEffect(() => {
     // Retain this effect but remove the mobile disabling logic so Spline renders on all devices
     setDisableSpline(false)
