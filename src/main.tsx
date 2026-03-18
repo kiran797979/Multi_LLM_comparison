@@ -13,8 +13,12 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 function HomeRoute() {
+  const hasSeenWelcome = sessionStorage.getItem('acs-welcome-seen') === 'true'
+  if (!hasSeenWelcome) {
+    return <Navigate to="/welcome" replace />
+  }
   const isAuth = localStorage.getItem('acs-authenticated') === 'true'
-  return isAuth ? <App /> : <Navigate to="/welcome" replace />
+  return isAuth ? <App /> : <Navigate to="/login" replace />
 }
 
 createRoot(document.getElementById('root')!).render(

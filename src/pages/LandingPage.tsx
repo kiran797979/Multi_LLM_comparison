@@ -179,13 +179,6 @@ export default function LandingPage() {
 
   // ── Auto-redirect to /login after the welcome animation ──────────────────
   useEffect(() => {
-    // If already authenticated, skip the entire intro and go straight to app
-    const isAuth = localStorage.getItem('acs-authenticated') === 'true'
-    if (isAuth) {
-      navigate('/', { replace: true })
-      return
-    }
-
     // If the user has already seen the welcome page this session, skip delay
     const alreadySeen = sessionStorage.getItem('acs-welcome-seen') === 'true'
     sessionStorage.setItem('acs-welcome-seen', 'true')
